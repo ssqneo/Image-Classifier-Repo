@@ -20,26 +20,26 @@ The data was split using a split ratio of 0.75 and the `set.seed()` utilized was
 # Models: 
 ## Naive Bayes Model
 The first model utilizes the `h2o.naiveBayes` to classify the images and gives the following results:
--Naive Bayes Accuracy: 0.5893246
--Naive Bayes Precision: 0.2196508
--Naive Bayes Recall: 0.4412724
--Naive Bayes AuC: 0.6167882
+- Naive Bayes Accuracy: 0.5893246
+- Naive Bayes Precision: 0.2196508
+- Naive Bayes Recall: 0.4412724
+- Naive Bayes AuC: 0.6167882
 ## Random Forest Model
 The second model utilizes the `h2o.randomForest` to classify the images and gives the following results:
--Random Forest Accuracy: 0.6937173
--Random Forest Precision: 0.1075924
--Random Forest Recall: 0.2161501
--Random Forest AuC: 0.6485541
+- Random Forest Accuracy: 0.6937173
+- Random Forest Precision: 0.1075924
+- Random Forest Recall: 0.2161501
+- Random Forest AuC: 0.6485541
 ## Deep Learning Model
 The second model utilizes the `h2o.randomForest` to classify the images and gives the following results:
--Deep Learning Accuracy: 0.3266219
--Deep Learning Precision: 0.0592773
--Deep Learning Recall: 0.1190865
--Deep Learning AuC: 0.4180248
+- Deep Learning Accuracy: 0.3266219
+- Deep Learning Precision: 0.0592773
+- Deep Learning Recall: 0.1190865
+- Deep Learning AuC: 0.4180248
 ## Support Vector Machine
 The second model utilizes the `h2o.randomForest` to classify the images and gives the following results:
--Gaussian RBF Kernel Accuracy: 0.571169
--Gaussian RBF Kernel Precision: 0.3828664
--Gaussian RBF Kernel Recall: 0.7525938
+- Gaussian RBF Kernel Accuracy: 0.571169
+- Gaussian RBF Kernel Precision: 0.3828664
+- Gaussian RBF Kernel Recall: 0.7525938
 
 
