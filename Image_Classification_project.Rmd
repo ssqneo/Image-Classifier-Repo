@@ -163,7 +163,7 @@ return(row)
 ```{r}
 
 
-# List the files of the Cars Folder
+# List the files of the Cats Folder
 Cat_files <-
   list.files(path = "C:/Users/s0853301/Desktop/fp/Cat")
 # Create Empty Data Frame
@@ -182,7 +182,7 @@ for (i in 1:length(Cat_files)) {
 }
 
 
-# Repeat process for the images that are not Cars
+# Repeat process for the images that are Dogs
 Dog_files <-
   list.files(path = "C:/Users/s0853301/Desktop/fp/Dog")
 Dogs <- data.frame()
@@ -194,14 +194,14 @@ for (i in 1:length(Dog_files)) {
   data <- convertonumbers(photo, "Dog")
   Dogs <- rbind(Dogs, data)
 }
-# Bind Cars and Not Cars data frames.
+# Bind Cats and Dogs data frames.
 Data <- rbind(Cats, Dogs)
 # Change the labels to factors
 Data$Label <- as.factor(Data$Label)
 ```
 
 
-# Setup the h2o environemtn and convert dataframe to an h2o object
+# Setup the h2o environment and convert dataframe to an h2o object
 ```{r}
 localh2o <- h2o.init()
 SPLIT_RATIO = 0.75
