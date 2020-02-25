@@ -1,6 +1,7 @@
 # Image Classifier Project
 # CIS-544-11
 # Cat and Dog dataset
+# Team Syed and Zimin
 
 # To load the required libraries
 ```{r}
@@ -19,7 +20,7 @@ require(imager)
 ```{r}
 sample_image <- load.image("C:/Users/s0853301/Desktop/fp/cat/cat.1.jpg")
 ```
-
+# The package imager uses edge detection
 ```{r}
 # Edge detector for x axis
 sample.image.xedges <- deriche(sample_image,2,order=2,axis="x")
