@@ -35,13 +35,13 @@ The second model utilizes the `h2o.randomForest` to classify the images and give
 - Random Forest Recall: 3.752039 %
 - Random Forest AuC: 65.09849 %
 ## Deep Learning Model
-The second model utilizes the `h2o.randomForest` to classify the images and gives the following results:
+The third model utilizes the `h2o.deeplearning` to classify the images and gives the following results:
 - Deep Learning Accuracy: 55.69106 %
 - Deep Learning Precision: 16.68697 %
 - Deep Learning Recall: 33.52365 %
 - Deep Learning AuC: 55.85439 %
 ## Support Vector Machine
-The second model utilizes the `h2o.randomForest` to classify the images and gives the following results:
+The fourth model utilizes the `ksvm` to classify the images and gives the following results:
 - Gaussian RBF Kernel Accuracy: 57.1169 %
 - Gaussian RBF Kernel Precision: 38.28664 %
 - Gaussian RBF Kernel Recall: 75.25938 %
