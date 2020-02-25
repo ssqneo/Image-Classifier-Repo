@@ -11,6 +11,10 @@ The goal of this project was to build a image classifier in R using Naive Bayes,
 # Requirement:
 The script is written in R, the required packages are as follows: `naiveBayes` `randomForest` `deeplearning` `kernlab` `h2o` `tidyverse` `caTools` `rvest` `imager`.
 
+# Dataset
+The dataset was obtained from kaggle. https://www.kaggle.com/tongpython/cat-and-dog
+
+
 # Labeling image:
 For labeling the images we used `imager` which is an image processing package in R. The following link was really helpful in understanding how image processing work and helped us get familiar with the syntax of the package https://dahtah.github.io/imager/imager.html
 The imager uses edge detection for an image and converts it into a 4 dimensional array. The four dimensions are labelled x,y,z,c which are width, height, depth and spectrum respectively. The first two are the usual spatial dimensions, the third one corresponds to depth, and the fourth one is colour. In case of a grayscale image the two extra dimensions are obviously pointless since it will be defined by just x and y. The object will still be officially 4 dimensional, with two trailing flat dimensions. Pixels are stored in the following manner: the scanning of the image begins at the upper-left corner, along the x axis. Once it hits the end of the scanline, it moves to the next line. Once it hits the end of the screen, it moves to the next frame (increasing z) and repeats the process. If an image has several colour channels, then once we’re done with the first colour channel we move to the next one. All in all the different dimensions are represented in the x,y,z,c order. In R the object is represented as a 4D array.
