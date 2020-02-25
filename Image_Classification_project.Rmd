@@ -1,0 +1,384 @@
+# Image Classifier Project
+# CIS-544-11
+# Cat and Dog dataset
+
+# To load the required libraries
+```{r}
+require(h2o)
+require(tidyverse)
+require(h2o)
+require(caTools)
+require(naivebayes)
+require(randomForest)
+require(rvest)
+require(imager)
+```
+
+# To demonstrate imager package on one of the files
+
+```{r}
+sample_image <- load.image("C:/Users/s0853301/Desktop/fp/cat/cat.1.jpg")
+```
+
+```{r}
+# Edge detector for x axis
+sample.image.xedges <- deriche(sample_image,2,order=2,axis="x")
+plot(sample.image.xedges)
+```
+
+
+```{r}
+# Edge detector for y axis
+sample.image.yedges <- deriche(sample_image,2,order=2,axis="y")
+plot(sample.image.yedges)
+```
+
+```{r}
+#Chain operations using the pipe operator (from magrittr)
+deriche(sample_image,2,order=2,axis="x") %>% deriche(2,order=2,axis="y") %>% plot
+```
+
+
+```{r}
+#Another example of chaining: image gradient along x and y axes
+layout(matrix(1:2,1,2));
+grayscale(sample_image) %>% imgradient("xy") %>% plot(layout="row")
+```
+
+
+# To define a function which generates features for a given image and then loop through the entire list of images 
+
+```{r}
+convertonumbers <- function(image,label){
+# Load image 
+im <- load.image(image)
+# Detect edges and set standard size
+im <- deriche(im,2,order=2,axis="x") %>% deriche(2,order=2,axis="y") %>% resize(50,50)
+# Convert to Data Frame
+df <- as.data.frame(im)
+# Add Label
+row <- data.frame(Label = label)
+# Separate Colors
+R <- subset(df,df$cc == 1)
+G <- subset(df,df$cc == 2)
+B <- subset(df,df$cc == 3)
+# Create Grouping Vectors
+c10 <- c(1:10)
+c20 <- c(11:20)
+c30 <- c(21:30)
+c40 <- c(31:40)
+c50 <- c(41:50)
+
+# 3 Loops, one for each Color  of RGB
+
+# Loop through X
+for(i in 1:5) {
+  x <- i
+  # Change the Grouping Vector depending on x itteration
+  onX <- case_when(x == 1 ~ c10,
+                   x == 2 ~ c20,
+                   x == 3 ~ c30,
+                   x == 4 ~ c40,
+                   x == 5 ~ c50)
+  # Loop through y
+  for (j in 1:5) {
+    y <- j
+    # Change the Grouping Vector depending on y itteration
+    onY <- case_when(y == 1 ~ c10,
+                     y == 2 ~ c20,
+                     y == 3 ~ c30,
+                     y == 4 ~ c40,
+                     y == 5 ~ c50)
+    # Change name of each column 
+    valName <- paste0("x", i, "y", j, ".R")
+    # Group based on the coordiate's groups
+    temp <-
+      R %>% filter(x %in% onX &
+                     y %in% onY) %>% summarize(val = mean(value))
+    colnames(temp) <- valName
+    # Add to the row data frame
+    row <- cbind(row, temp)
+  }
+  
+}
+# Repeat proces for G
+for(i in 1:5) {
+  x <- i
+  onX <- case_when(x == 1 ~ c10,
+                   x == 2 ~ c20,
+                   x == 3 ~ c30,
+                   x == 4 ~ c40,
+                   x == 5 ~ c50)
+  for (j in 1:5) {
+    y <- j
+    onY <- case_when(y == 1 ~ c10,
+                     y == 2 ~ c20,
+                     y == 3 ~ c30,
+                     y == 4 ~ c40,
+                     y == 5 ~ c50)
+    valName <- paste0("x", i, "y", j, ".G")
+    temp <-
+      G %>% filter(x %in% onX &
+                     y %in% onY) %>% summarize(val = mean(value))
+    colnames(temp) <- valName
+    row <- cbind(row, temp)
+  }
+  
+}
+# Repeat Process for B
+for(i in 1:5) {
+  x <- i
+  onX <- case_when(x == 1 ~ c10,
+                   x == 2 ~ c20,
+                   x == 3 ~ c30,
+                   x == 4 ~ c40,
+                   x == 5 ~ c50)
+  for (j in 1:5) {
+    y <- j
+    onY <- case_when(y == 1 ~ c10,
+                     y == 2 ~ c20,
+                     y == 3 ~ c30,
+                     y == 4 ~ c40,
+                     y == 5 ~ c50)
+    valName <- paste0("x", i, "y", j, ".B")
+    temp <-
+      B %>% filter(x %in% onX &
+                     y %in% onY) %>% summarize(val = mean(value))
+    colnames(temp) <- valName
+    row <- cbind(row, temp)
+  }
+  
+}
+# Return Final Data Set
+return(row)
+}
+
+```
+
+
+# Calling the above defined function
+
+```{r}
+
+
+# List the files of the Cars Folder
+Cat_files <-
+  list.files(path = "C:/Users/s0853301/Desktop/fp/Cat")
+# Create Empty Data Frame
+Cats <- data.frame()
+
+setwd("C:/Users/s0853301/Desktop/fp")
+
+# Loop each file
+for (i in 1:length(Cat_files)) {
+  # Get the path for each photo
+  photo <- paste0("Cat/", Cat_files[i])
+  # Use formula to generate the numbers and assign the label "Cat"
+  data <- convertonumbers(photo, "Cat")
+  # Bind Each Result together
+  Cats <- rbind(Cats, data)
+}
+
+
+# Repeat process for the images that are not Cars
+Dog_files <-
+  list.files(path = "C:/Users/s0853301/Desktop/fp/Dog")
+Dogs <- data.frame()
+
+setwd("C:/Users/s0853301/Desktop/fp")
+
+for (i in 1:length(Dog_files)) {
+  photo <- paste0("Dog/", Dog_files[i])
+  data <- convertonumbers(photo, "Dog")
+  Dogs <- rbind(Dogs, data)
+}
+# Bind Cars and Not Cars data frames.
+Data <- rbind(Cats, Dogs)
+# Change the labels to factors
+Data$Label <- as.factor(Data$Label)
+```
+
+
+# Setup the h2o environemtn and convert dataframe to an h2o object
+```{r}
+localh2o <- h2o.init()
+SPLIT_RATIO = 0.75
+h2o.cat.dog  <- as.h2o(Data)
+set.seed(12345)
+```
+
+# Split the data
+```{r}
+h2oSplit <- h2o.splitFrame(data = h2o.cat.dog, ratios = SPLIT_RATIO)
+train.h2o <- h2oSplit[[1]]
+test.h2o <- h2oSplit[[2]]
+```
+
+# To build 4 separate classifiers 
+
+# To build a NaiveBayes model 
+
+```{r}
+#NaiveBayes Model
+nbModel <- h2o.naiveBayes(y = "Label",
+                          training_frame = train.h2o,
+                          validation_frame = test.h2o)
+
+nbPredict <- h2o.predict(nbModel, test.h2o)
+
+# Confusion Matrix for Naive Bayes
+
+table.nb <- table(as.vector(nbPredict$predict), as.vector(test.h2o$Label)) 
+
+
+nbresult <- data.frame(Actual = as.vector(test.h2o$Label), Prediction = as.vector(nbPredict$predict))
+
+# TP,TN, FP, FN
+TPnb <- subset(nbresult, Actual == "Cat" & Prediction == "Cat" )
+TNnb <- subset(nbresult, Actual == "Dog" & Prediction == "Dog")
+FPnb <- subset(nbresult, Actual == "Dog" & Prediction == "Cat")
+FNnb <- subset(nbresult, Actual == "Cat" & Prediction == "Dog")
+
+# Accuracy
+accuracynb <- (nrow(TPnb)) / (nrow(TPnb) + nrow(FPnb))
+cat("Naive Bayes Accuracy:" , accuracynb*100,"%", "\n")
+
+# Precision
+
+precision.nb <- (nrow(TPnb))/ (nrow(test.h2o))
+cat("Naive Bayes Precision:" , precision.nb*100,"%", "\n")
+
+
+# Recall
+recallnb <- (nrow(TPnb)) / (nrow(TPnb) + nrow(FNnb))
+cat("Naive Bayes Recall:" , recallnb*100,"%", "\n")
+
+# Performance
+nbPerformance <- h2o.performance(nbModel, test.h2o)
+
+# Auc
+h2onbAUC <- h2o.auc(nbPerformance)
+cat("Naive Bayes AuC:", h2onbAUC*100,"%", "\n")
+```
+
+# To build a Random Forest model
+
+```{r}
+# RandomForest
+rfModel <- h2o.randomForest(y = "Label",
+                            training_frame = train.h2o,
+                            validation_frame = test.h2o)
+                            
+
+rfPredict <- h2o.predict(rfModel, test.h2o, type = "class")
+
+rfresult <- data.frame(Actual = as.vector(test.h2o$Label), Prediction = as.vector(rfPredict$predict))
+
+# TP,TN, FP, FN
+TPrf <- subset(rfresult, Actual == "Cat" & Prediction == "Cat" )
+TNrf <- subset(rfresult, Actual == "Dog" & Prediction == "Dog")
+FPrf <- subset(rfresult, Actual == "Dog" & Prediction == "Cat")
+FNrf <- subset(rfresult, Actual == "Cat" & Prediction == "Dog")
+
+# Accuracy
+accuracyrf <- (nrow(TPrf)) / (nrow(TPrf) + nrow(FPrf))
+cat("Random Forest Accuracy:" , accuracyrf*100,"%", "\n")
+
+# Precision
+precisionrf <- (nrow(TPrf)) / (nrow(test.h2o))
+cat("Random Forest Precision:" , precisionrf*100,"%", "\n")
+
+# Recall
+recallrf <- (nrow(TPrf)) / (nrow(TPrf) + nrow(FNrf))
+cat("Random Forest Recall:" , recallrf*100,"%", "\n")
+
+# Performance
+rfPerformance <- h2o.performance(rfModel, test.h2o)
+
+# Auc
+h2orfAUC <- h2o.auc(rfPerformance)
+cat("Random Forest AuC:", h2orfAUC*100,"%", "\n")
+```
+
+# To build a Deep Learning model
+
+```{r}
+# DEEP LEARNING
+h2oDL <- h2o.deeplearning(
+  x = colnames(train.h2o),
+  y = c("Label"),
+  training_frame = train.h2o,
+  hidden = c(30, 20, 10),
+  epochs = 100,
+  seed = 12345,
+  nfolds = 3
+)
+
+
+DLpred <- h2o.predict(h2oDL, test.h2o)
+DLresult <- data.frame(Actual = as.vector(test.h2o$Label), Prediction = as.vector(DLpred$predict))
+
+# TP,TN, FP, FN
+TPDL <- subset(DLresult, Actual == "Cat" & Prediction == "Cat" )
+TNDL <- subset(DLresult, Actual == "Dog" & Prediction == "Dog")
+FPDL <- subset(DLresult, Actual == "Dog" & Prediction == "Cat")
+FNDL <- subset(DLresult, Actual == "Cat" & Prediction == "Dog")
+
+# Accuracy
+accuracyDL <- (nrow(TPDL)) / (nrow(TPDL) + nrow(FPDL))
+cat("Deep Learning Accuracy:" , accuracyDL*100,"%", "\n")
+
+# Precision
+precisionDL <- (nrow(TPDL)) / (nrow(test.h2o))
+cat("Deep Learning Precision:" , precisionDL*100,"%", "\n")
+
+# Recall
+recallDL <- (nrow(TPDL)) / (nrow(TPDL) + nrow(FNDL))
+cat("Deep Learning Recall:" , recallDL*100,"%", "\n")
+
+# Performance
+DLPerformance <- h2o.performance(h2oDL, test.h2o)
+
+# Auc
+h2oDLAUC <- h2o.auc(DLPerformance)
+cat("Deep Learning AuC:", h2oDLAUC*100,"%", "\n")
+```
+
+# To build a SVM model
+
+# Conventional Split
+```{r}
+set.seed(12345)
+sample <- sample.split(Data$Label, SplitRatio = 0.75)
+train <- subset(Data, sample == T)
+test <- subset(Data, sample == F)
+```
+
+
+```{r}
+# Support Vector Machine
+modelsvm <- ksvm(Label ~ ., data = train, kernel = "rbfdot")
+
+predsvm <- predict(modelsvm,test)
+svmresult <- data.frame(Actual = test$Label, Prediction = predsvm)
+
+# TP,TN, FP, FN
+TPsvm <- subset(svmresult, Actual == "Cat" & Prediction == "Cat" )
+TNsvm <- subset(svmresult, Actual == "Dog" & Prediction == "Dog")
+FPsvm <- subset(svmresult, Actual == "Dog" & Prediction == "Cat")
+FNsvm <- subset(svmresult, Actual == "Cat" & Prediction == "Dog")
+
+# Accuracy
+accuracysvm <- (nrow(TPsvm)) / (nrow(TPsvm) + nrow(FPsvm))
+cat("Gaussian RBF Kernel Accuracy:" , accuracysvm*100,"%", "\n")
+
+# Precision
+precisionsvm <- (nrow(TPsvm)) / (nrow(test.h2o))
+cat("Gaussian RBF Kernel Precision:" , precisionsvm*100,"%", "\n")
+
+# Recall
+recallsvm <- (nrow(TPsvm)) / (nrow(TPsvm) + nrow(FNsvm))
+cat("Gaussian RBF Kernel Recall:" , recallsvm*100,"%", "\n")
+
+
+```
