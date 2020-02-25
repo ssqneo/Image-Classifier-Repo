@@ -20,7 +20,7 @@ require(imager)
 ```{r}
 sample_image <- load.image("C:/Users/s0853301/Desktop/fp/cat/cat.1.jpg")
 ```
-# The package imager uses edge detection
+# The package imager uses edge detection for an image and converts it into a 4 dimensional array. The four dimensions are labelled x,y,z,c which are width, height, depth and spectrum respectively. The first two are the usual spatial dimensions, the third one corresponds to depth, and the fourth one is colour. In case of a grayscale image the two extra dimensions are obviously pointless since it will be defined by just x and y. The object will still be officially 4 dimensional, with two trailing flat dimensions. Pixels are stored in the following manner: the scanning of the image begins at the upper-left corner, along the x axis. Once it hits the end of the scanline, it moves to the next line. Once it hits the end of the screen, it moves to the next frame (increasing z) and repeats the process. If an image has several colour channels, then once we’re done with the first colour channel we move to the next one. All in all the different dimensions are represented in the x,y,z,c order. In R the object is represented as a 4D array.
 ```{r}
 # Edge detector for x axis
 sample.image.xedges <- deriche(sample_image,2,order=2,axis="x")
@@ -48,6 +48,7 @@ grayscale(sample_image) %>% imgradient("xy") %>% plot(layout="row")
 
 
 # To define a function which generates features for a given image and then loop through the entire list of images 
+# All in all this function loads and image, resizes it to a 50 by 50 frame and then detects the edges, once that is done it converts it to a dataframe, the depth of the 4 dimensional array outputted through represents 1,2 and 3 for red, green and blue respectively. Since just for a single image it creates way over 250,000 differnet features we grouped it by an approximation of the depth and then took a mean of the x and y dimension.
 
 ```{r}
 convertonumbers <- function(image,label){
