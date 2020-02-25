@@ -14,6 +14,9 @@ The script is written in R, the required packages are as follows: `naiveBayes` `
 # Labeling image:
 For labeling the images we used `imager` which is an image processing package in R. The following link was really helpful in understanding how image processing work and helped us get familiar with the syntax of the package https://dahtah.github.io/imager/imager.html
 
+<a href="https://ibb.co/K92NDWm"><img src="https://i.ibb.co/nD73BjR/image.png" alt="image" border="0"></a>
+<a href="https://ibb.co/g6jyJC1"><img src="https://i.ibb.co/yVf0qJT/image.png" alt="image" border="0"></a>
+
 # Data Split
 The data was split using a split ratio of 0.75 and the `set.seed()` utilized was 12345. The naiveBayes, randomForest and Deep Learning models were used with h2o package which is a scalable machine learning platform. It utilizes in-memory compression which makes it very robust. 
 
